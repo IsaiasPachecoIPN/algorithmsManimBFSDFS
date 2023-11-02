@@ -90,7 +90,7 @@ def animateBFSAlgorithm(scene, graph, bfs_tree_dic):
             for elem in bfs_tree_dic[key]:
                 scene.play(
                     AnimationGroup(
-                        Flash(graph.vertices[key], color=RED, line_length=0.2, flash_radius=0.5),
+                        Flash(graph.vertices[elem], color=RED, line_length=0.2, flash_radius=0.5),
                         graph.vertices[elem].animate.set_color(DEFAULT_ROOT_COLOR),
                         graph.vertices[key].animate.move_to(graph.vertices[elem]),
                         graph.edges[getEdgeFromGraph(graph, (key,elem))].animate.set_color(DEFAULT_ROOT_COLOR),
