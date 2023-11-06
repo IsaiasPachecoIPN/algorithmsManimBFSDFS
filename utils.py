@@ -132,3 +132,50 @@ def BFS( scene, graph, root ):
     if IS_ANIMATED: animateBFSAlgorithm(scene, graph, bfs_tree_dic)
     return bfs_tree
 
+explored = []
+dfs_res = []
+dfs_res.append([])
+_counter = 0
+
+def DFS( scene, graph, u , isInside = False):
+
+    global _counter
+
+    if u not in explored:
+        print("Node:", u)
+        dfs_res[_counter].append(u)
+        explored.append(u)
+        for v in getIncidentNodes(graph, u):
+            #print("Edge:", (u,v))
+            DFS(scene, graph, v, True)
+        #print("End for")
+        dfs_res.append([])
+        _counter += 1
+
+def lookForAncestors( graph, dfs_res ):
+    for i in range(1,len(dfs_res)):
+        dfs_res[i].insert( 0, getIncidentNodes(graph, dfs_res[i][0])[0])
+
+def showDFS( scene, graph, root):
+    DFS(scene, graph, root)
+    res = [ x for x in dfs_res if x != [] ]
+    lookForAncestors(graph, res)    
+    print("dfs_res:", res)
+    return res
+
+def crearPares(arreglo):
+  pares = []
+  for i in range(len(arreglo) - 1):
+    pares.append((arreglo[i], arreglo[i + 1]))
+  return pares
+
+def animateDFSAlgorithm( scene, graph, root ):
+    
+    dfs_res = showDFS(scene, graph, root)
+    for i in dfs_res:
+        if IS_ANIMATED: scene.play( graph.vertices[i[0]].animate.set_color(DEFAULT_ROOT_COLOR) )
+        
+        animation_elems =  crearPares(i)
+        print("animation_elems:", animation_elems)
+        
+        

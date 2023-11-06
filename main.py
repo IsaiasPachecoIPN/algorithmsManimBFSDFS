@@ -3,6 +3,9 @@ from utils import *
 
 root = 0
 
+import sys
+sys.setrecursionlimit(1500)
+
 def readInitData( file ):
     """
     Function to load inputdata 
@@ -67,7 +70,14 @@ class CreateScene(MovingCameraScene):
     def construct(self):
 
         #Create the graph
-        createScene(self)
+        #createScene(self)
+
+        g = createGraph()
+        g2 = createGraph()
+        self.play(Write(g))
+        self.play( g2.animate.shift(RIGHT*5) )
+        animateDFSAlgorithm(self, g, root)
+        #BFS(self, g2, root)
         #print(readInitData("inputdata"))
         # try:
 
