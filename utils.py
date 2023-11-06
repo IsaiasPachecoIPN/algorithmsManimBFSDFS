@@ -142,7 +142,7 @@ def DFS( scene, graph, u , isInside = False):
     global _counter
 
     if u not in explored:
-        print("Node:", u)
+        #print("Node:", u)
         dfs_res[_counter].append(u)
         explored.append(u)
         for v in getIncidentNodes(graph, u):
@@ -172,10 +172,67 @@ def crearPares(arreglo):
 def animateDFSAlgorithm( scene, graph, root ):
     
     dfs_res = showDFS(scene, graph, root)
-    for i in dfs_res:
-        if IS_ANIMATED: scene.play( graph.vertices[i[0]].animate.set_color(DEFAULT_ROOT_COLOR) )
+    print("Graph vertices: ", graph.vertices)
+    vertices_coords = [ graph.vertices[key].get_center() for key in graph.vertices.keys() ]
+    print("vertices_coords:", vertices_coords)
+
+    for idx, arr_node in enumerate(dfs_res):
+        edges_to_animate = crearPares(arr_node)
+        print("edges_to_animate:", edges_to_animate)
+
+        if IS_ANIMATED:
+            scene.play(
+                AnimationGroup(
+                    #Color all nodes
+                    * [ graph.vertices[j].animate.set_color(DEFAULT_VISITED_COLOR) for j in arr_node ],
+                    #Color all edges
+                    * [ graph.edges[getEdgeFromGraph(graph, j)].animate.set_color(DEFAULT_VISITED_COLOR) for j in edges_to_animate ],
+                )
+            )
+
+            #Print initial node
+            #print("arr_node[0]:", arr_node[0])
+            for i, steps in enumerate(edges_to_animate):
+                start_node = steps[0]
+                end_node = steps[1]
+
+                scene.play(
+                    AnimationGroup(
+                        Flash( graph.vertices[start_node], color=RED, line_length=0.2, flash_radius=0.5 ),
+                        graph.vertices[start_node].animate.set_color(DEFAULT_ROOT_COLOR),
+                        graph.vertices[start_node].animate.move_to(graph.vertices[end_node]),
+                        graph.edges[getEdgeFromGraph(graph, steps)].animate.set_color(DEFAULT_ROOT_COLOR),
+                    ), lag_ratio=0.5
+                )
+            #print("moving: {} to {}".format(arr_node[0], vertices_coords[arr_node[0]-1]))
+            #graph.vertices[arr_node[0]].move_to(vertices_coords[arr_node[0]-1])
+            #scene.wait(0.5)
+            # arr_anim = []
+            # for node in graph.vertices.keys():
+            #     arr_anim.append(graph.vertices[node].move_to(vertices_coords[node-1]))
+
+            [ graph.vertices[key].move_to(vertices_coords[key-1]) for key in arr_node ]
+
+            # scene.play(
+            #     AnimationGroup(
+            #         * [ graph.vertices[key].animate.move_to(vertices_coords[key-1]) for key in arr_node ],
+            #     ), lag_ratio=0.5
+            # )
+
+            # scene.play(
+            #     AnimationGroup(
+            #         Flash(graph.vertices[elem], color=RED, line_length=0.2, flash_radius=0.5),
+            #         graph.vertices[elem].animate.set_color(DEFAULT_ROOT_COLOR),
+            #         graph.vertices[key].animate.move_to(graph.vertices[elem]),
+            #         graph.edges[getEdgeFromGraph(graph, (key,elem))].animate.set_color(DEFAULT_ROOT_COLOR),
+            #     ),lag_ratio=0.5
+            # )
+            # graph.vertices[key].move_to(key_position)
+
+        # if IS_ANIMATED: scene.play( graph.vertices[i[0]].animate.set_color(DEFAULT_ROOT_COLOR) )
+
         
-        animation_elems =  crearPares(i)
-        print("animation_elems:", animation_elems)
+        # animation_elems =  crearPares(i)
+        # print("animation_elems:", animation_elems)
         
         

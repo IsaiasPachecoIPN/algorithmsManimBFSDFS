@@ -77,7 +77,7 @@ class CreateScene(MovingCameraScene):
         self.play(Write(g))
         self.play( g2.animate.shift(RIGHT*5) )
         animateDFSAlgorithm(self, g, root)
-        #BFS(self, g2, root)
+        BFS(self, g2, root)
         #print(readInitData("inputdata"))
         # try:
 
