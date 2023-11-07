@@ -2,6 +2,8 @@ from manim import *
 from utils import *
 
 root = 0
+DEFAULT_GRAPH_LAYOUT = "spring"
+DEFAULT_GRAPH_SCALE = 2
 
 import sys
 sys.setrecursionlimit(1500)
@@ -15,6 +17,8 @@ def readInitData( file ):
     arr_edges = []
     arr_vertices = []
     global root
+    global DEFAULT_GRAPH_LAYOUT
+    global DEFAULT_GRAPH_SCALE
 
     with open(file, 'r') as f:
         data = f.readlines()
@@ -33,6 +37,12 @@ def readInitData( file ):
             elif "root" in line:
                 root_line = line.strip().split(":")
                 root = int(root_line[1])
+            elif "graph_layout" in line:
+                layout_line = line.strip().split(":")
+                DEFAULT_GRAPH_LAYOUT = layout_line[1]
+            elif "graph_scale" in line:
+                scale_line = line.strip().split(":")
+                DEFAULT_GRAPH_SCALE = float(scale_line[1])
 
     print("vertices:", arr_vertices)
     print("edges:", arr_edges)
@@ -45,7 +55,7 @@ def createGraph():
     Function to create the graph
     """
     values = readInitData("inputdata")
-    g = Graph(values[0], values[1], layout_config={"seed": 0}, labels=SHOW_LABELS)
+    g = Graph(values[0], values[1], labels=SHOW_LABELS, layout_scale=DEFAULT_GRAPH_SCALE, layout=DEFAULT_GRAPH_LAYOUT)
     return g
 
 
@@ -72,16 +82,36 @@ class CreateScene(MovingCameraScene):
         #Create the graph
         #createScene(self)
 
+        self.camera.frame.set(width = DEFAULT_FRAME_WIDTH)
+        self.camera.frame.shift(RIGHT * (DEFAULT_FRAME_WIDTH/2) - (5))
+        self.camera.frame.shift(UP * DEFAULT_GRAPH_SCALE * (DEFAULT_GRAPH_SCALE+0.5)) 
+
         g = createGraph()
         g2 = createGraph()
-        self.play(Write(g))
-        self.play( g2.animate.shift(RIGHT*5) )
-        animateDFSAlgorithm(self, g, root)
-        BFS(self, g2, root)
-        #print(readInitData("inputdata"))
-        # try:
 
-        # except:
-        #     print("Error al leer el archivo")
+        #Create title fro graph
+        title_a = Text("BFS", color=BLUE)
+        title_a.next_to(g, UP)
+
+        g2.next_to(g, RIGHT*5)
+
+        title_b = Text("DFS", color=BLUE)
+        title_b.next_to(g2, UP)
+
+        self.play( AnimationGroup(
+            Write(title_a),
+            Write(g),
+        ))
+
+        self.play(
+            AnimationGroup(
+                Write(title_b),
+                Write(g2),
+            )
+        )
+
+        BFS(self, g, root)
+        animateDFSAlgorithm(self, g2, root)
+        self.wait(5)
 
 

@@ -6,35 +6,8 @@ DEFAULT_VISITED_COLOR = "#FFD501"
 DAFAULT_GOTO_COLOR = "#9701FF"
 SHOW_LABELS = False
 
-def crear_tonos_color(color, cantidad_tonos):
-  """
-  Crea un arreglo de colores en diferentes tonalidades para el color especificado.
-
-  Args:
-    color: El color a partir del cual se crearán los tonos.
-    cantidad_tonos: La cantidad de tonos que se crearán.
-
-  Returns:
-    Un arreglo de colores.
-  """
-
-  colores = []
-
-  for i in range(cantidad_tonos):
-    # Obtenemos el valor del tono actual.
-    tono = i / (cantidad_tonos - 1)
-
-    # Ajustamos el valor del tono para cada componente del color.
-    rojo = int(color[0] + (255 - color[0]) * tono)
-    verde = int(color[1] + (255 - color[1]) * tono)
-    azul = int(color[2] + (255 - color[2]) * tono)
-
-    # Creamos el nuevo color con los valores ajustados.
-    nuevo_color = "#%02x%02x%02x" % (rojo, verde, azul)
-
-    colores.append(nuevo_color)
-
-  return colores
+#Decreasing the value config.frame_width will zoom in the Mobject
+DEFAULT_FRAME_WIDTH = 15
 
 def getEdgeFromGraph(graph, key):
     """
@@ -77,6 +50,8 @@ def animateBFSAlgorithm(scene, graph, bfs_tree_dic):
     """
     Function to animate the BFS for the graph
     """
+    dic_vertices_coords = { key: graph.vertices[key].get_center() for key in graph.vertices.keys() }
+
     for key in bfs_tree_dic.keys():
         if bfs_tree_dic[key] != []:
             scene.play(
@@ -86,7 +61,9 @@ def animateBFSAlgorithm(scene, graph, bfs_tree_dic):
                 )
             )
 
-            key_position = graph.vertices[key].get_center()
+            position_node = graph.vertices[key].copy()
+            scene.add(position_node)
+
             for elem in bfs_tree_dic[key]:
                 scene.play(
                     AnimationGroup(
@@ -96,7 +73,7 @@ def animateBFSAlgorithm(scene, graph, bfs_tree_dic):
                         graph.edges[getEdgeFromGraph(graph, (key,elem))].animate.set_color(DEFAULT_ROOT_COLOR),
                     ),lag_ratio=0.5
                 )
-                graph.vertices[key].move_to(key_position)
+                graph.vertices[key].move_to(dic_vertices_coords[key])
 
 
 def BFS( scene, graph, root ):
@@ -173,8 +150,9 @@ def animateDFSAlgorithm( scene, graph, root ):
     
     dfs_res = showDFS(scene, graph, root)
     print("Graph vertices: ", graph.vertices)
-    vertices_coords = [ graph.vertices[key].get_center() for key in graph.vertices.keys() ]
-    print("vertices_coords:", vertices_coords)
+    dic_vertices_coords = { key: graph.vertices[key].get_center() for key in graph.vertices.keys() }
+    #dic_vertices_coords = [ graph.vertices[key].get_center() for key in graph.vertices.keys() ]
+    print("vertices_coords:", dic_vertices_coords)
 
     for idx, arr_node in enumerate(dfs_res):
         edges_to_animate = crearPares(arr_node)
@@ -190,49 +168,29 @@ def animateDFSAlgorithm( scene, graph, root ):
                 )
             )
 
-            #Print initial node
-            #print("arr_node[0]:", arr_node[0])
-            for i, steps in enumerate(edges_to_animate):
+   
+            for steps in edges_to_animate:
                 start_node = steps[0]
                 end_node = steps[1]
 
+                #Create a copy of the start node and add it to the scene
+                position_node = graph.vertices[start_node].copy()
+                scene.add(position_node)
+                position_node.move_to(dic_vertices_coords[start_node])
+
+                #Play the animation of DFS algorithm
                 scene.play(
                     AnimationGroup(
-                        Flash( graph.vertices[start_node], color=RED, line_length=0.2, flash_radius=0.5 ),
+                        Flash( graph.vertices[end_node], color=RED, line_length=0.2, flash_radius=0.5 ),
                         graph.vertices[start_node].animate.set_color(DEFAULT_ROOT_COLOR),
                         graph.vertices[start_node].animate.move_to(graph.vertices[end_node]),
                         graph.edges[getEdgeFromGraph(graph, steps)].animate.set_color(DEFAULT_ROOT_COLOR),
                     ), lag_ratio=0.5
                 )
-            #print("moving: {} to {}".format(arr_node[0], vertices_coords[arr_node[0]-1]))
-            #graph.vertices[arr_node[0]].move_to(vertices_coords[arr_node[0]-1])
-            #scene.wait(0.5)
-            # arr_anim = []
-            # for node in graph.vertices.keys():
-            #     arr_anim.append(graph.vertices[node].move_to(vertices_coords[node-1]))
 
-            [ graph.vertices[key].move_to(vertices_coords[key-1]) for key in arr_node ]
-
-            # scene.play(
-            #     AnimationGroup(
-            #         * [ graph.vertices[key].animate.move_to(vertices_coords[key-1]) for key in arr_node ],
-            #     ), lag_ratio=0.5
-            # )
-
-            # scene.play(
-            #     AnimationGroup(
-            #         Flash(graph.vertices[elem], color=RED, line_length=0.2, flash_radius=0.5),
-            #         graph.vertices[elem].animate.set_color(DEFAULT_ROOT_COLOR),
-            #         graph.vertices[key].animate.move_to(graph.vertices[elem]),
-            #         graph.edges[getEdgeFromGraph(graph, (key,elem))].animate.set_color(DEFAULT_ROOT_COLOR),
-            #     ),lag_ratio=0.5
-            # )
-            # graph.vertices[key].move_to(key_position)
-
-        # if IS_ANIMATED: scene.play( graph.vertices[i[0]].animate.set_color(DEFAULT_ROOT_COLOR) )
-
-        
-        # animation_elems =  crearPares(i)
-        # print("animation_elems:", animation_elems)
-        
+            #Return the nodes to their original position
+            [ graph.vertices[node].move_to(dic_vertices_coords[node]) for node in arr_node ]
+            #Change the color of the nodes already visited
+            [ graph.vertices[node].set_color(DEFAULT_ROOT_COLOR) for node in arr_node ]
+    
         
