@@ -4,6 +4,13 @@ from utils import *
 root = 0
 DEFAULT_GRAPH_LAYOUT = "spring"
 DEFAULT_GRAPH_SCALE = 2
+SHOW_LABELS = True
+IS_ANIMATED = True
+DEFAULT_ROOT_COLOR = "#01BEFF"
+DEFAULT_VISITED_COLOR = "#FFD501"
+DAFAULT_GOTO_COLOR = "#9701FF"
+#Decreasing the value config.frame_width will zoom in the Mobject
+DEFAULT_FRAME_WIDTH = 15
 
 import sys
 sys.setrecursionlimit(1500)
@@ -19,6 +26,7 @@ def readInitData( file ):
     global root
     global DEFAULT_GRAPH_LAYOUT
     global DEFAULT_GRAPH_SCALE
+    global SHOW_LABELS
 
     with open(file, 'r') as f:
         data = f.readlines()
@@ -43,12 +51,23 @@ def readInitData( file ):
             elif "graph_scale" in line:
                 scale_line = line.strip().split(":")
                 DEFAULT_GRAPH_SCALE = float(scale_line[1])
+            elif "show_labels" in line:
+                show_labels_line = line.strip().split(":")
+                SHOW_LABELS = True if show_labels_line[1] == "true" else False
+                print("SHOW_LABELS:", SHOW_LABELS)
 
     print("vertices:", arr_vertices)
     print("edges:", arr_edges)
     print("root:", root)
+    print("show_labels:", SHOW_LABELS)
     return [arr_vertices, arr_edges]
 
+
+def getShowLabels():
+    """
+    Function to get the show labels value
+    """
+    return SHOW_LABELS
 
 def createGraph():
     """
@@ -114,7 +133,7 @@ class CreateScene(MovingCameraScene):
             )
         )
 
-        #BFS(self, g, root)
+        BFS(self, g, root)
         animateDFSAlgorithm(self, g2, root)
         self.wait(5)
 

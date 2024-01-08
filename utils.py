@@ -1,13 +1,5 @@
 from main import *
 
-IS_ANIMATED = True
-DEFAULT_ROOT_COLOR = "#01BEFF"
-DEFAULT_VISITED_COLOR = "#FFD501"
-DAFAULT_GOTO_COLOR = "#9701FF"
-SHOW_LABELS = True
-
-#Decreasing the value config.frame_width will zoom in the Mobject
-DEFAULT_FRAME_WIDTH = 15
 
 def getEdgeFromGraph(graph, key):
     """
@@ -62,27 +54,39 @@ def animateBFSAlgorithm(scene, graph, bfs_tree_dic):
                 ),
             )
 
-            for elem in bfs_tree_dic[key]:
-                graph._labels[elem].color = "#000"
+            if SHOW_LABELS:
+                for elem in bfs_tree_dic[key]:
+                    graph._labels[elem].color = "#000"
 
             for elem in bfs_tree_dic[key]:
-                graph._labels[key].color = "#000"
-                graph._labels[elem].color = "#000"
-                scene.play(
-                    AnimationGroup(
-                        Flash(graph.vertices[elem], color=RED, line_length=0.2, flash_radius=0.5),
-                        
-                        graph.vertices[elem].animate.set_color(DEFAULT_ROOT_COLOR),
-                        
-                        graph._labels[key].animate.set_color(DEFAULT_ROOT_COLOR),
-                        graph.vertices[key].animate.move_to(graph.vertices[elem]),
-                        
-                        graph.edges[getEdgeFromGraph(graph, (key,elem))].animate.set_color(DEFAULT_ROOT_COLOR),
-                    ),lag_ratio=0.5
-                )
+                if SHOW_LABELS:
+                    graph._labels[key].color = "#000"
+                    graph._labels[elem].color = "#000"
+
+                if SHOW_LABELS:
+                    scene.play(
+                        AnimationGroup(
+                            Flash(graph.vertices[elem], color=RED, line_length=0.2, flash_radius=0.5),
+                            graph.vertices[elem].animate.set_color(DEFAULT_ROOT_COLOR),
+                            graph._labels[key].animate.set_color(DEFAULT_ROOT_COLOR),
+                            graph.vertices[key].animate.move_to(graph.vertices[elem]),
+                            graph.edges[getEdgeFromGraph(graph, (key,elem))].animate.set_color(DEFAULT_ROOT_COLOR),
+                        ),lag_ratio=0.5
+                    )
+                else:
+                    scene.play(
+                        AnimationGroup(
+                            Flash(graph.vertices[elem], color=RED, line_length=0.2, flash_radius=0.5),
+                            graph.vertices[elem].animate.set_color(DEFAULT_ROOT_COLOR),
+                            graph.vertices[key].animate.move_to(graph.vertices[elem]),
+                            graph.edges[getEdgeFromGraph(graph, (key,elem))].animate.set_color(DEFAULT_ROOT_COLOR),
+                        ),lag_ratio=0.5
+                    )
                 graph.vertices[key].move_to(dic_vertices_coords[key])
-                graph._labels[key].color = "#000"
-                graph._labels[elem].color = "#000"
+                
+                if SHOW_LABELS:
+                    graph._labels[key].color = "#000"
+                    graph._labels[elem].color = "#000"
 
 def BFS( scene, graph, root ):
 
@@ -176,14 +180,17 @@ def animateDFSAlgorithm( scene, graph, root ):
                 )
             )
 
-            for elem in arr_node:
-                graph._labels[elem].color = "#000"
+            if SHOW_LABELS:
+                for elem in arr_node:
+                    graph._labels[elem].color = "#000"
    
             for steps in edges_to_animate:
                 start_node = steps[0]
                 end_node = steps[1]
-                graph._labels[start_node].color = "#000"
-                graph._labels[end_node].color = "#000"
+
+                if SHOW_LABELS:
+                    graph._labels[start_node].color = "#000"
+                    graph._labels[end_node].color = "#000"
 
                 #Create a copy of the start node and add it to the scene
                 position_node = graph.vertices[start_node].copy()
@@ -199,15 +206,18 @@ def animateDFSAlgorithm( scene, graph, root ):
                         graph.edges[getEdgeFromGraph(graph, steps)].animate.set_color(DEFAULT_ROOT_COLOR),
                     ), lag_ratio=0.5
                 )
-                graph._labels[start_node].color = "#000"
-                graph._labels[end_node].color = "#000"
+                if SHOW_LABELS:
+                    graph._labels[start_node].color = "#000"
+                    graph._labels[end_node].color = "#000"
 
             #Return the nodes to their original position
             [ graph.vertices[node].move_to(dic_vertices_coords[node]) for node in arr_node ]
             #Change the color of the nodes already visited
             [ graph.vertices[node].set_color(DEFAULT_ROOT_COLOR) for node in arr_node ]
-            #Change the color og the labels already visited
-            [ graph._labels[node].set_color("#000") for node in arr_node ]
+
+            if SHOW_LABELS:
+                #Change the color og the labels already visited
+                [ graph._labels[node].set_color("#000") for node in arr_node ]
 
     
         
