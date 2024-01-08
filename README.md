@@ -19,3 +19,5 @@ To run the project, manim have to be installed and all its requirement. Then run
 #Output
 
 ![](https://github.com/IsaiasPachecoIPN/algorithmsManimBFSDFS/blob/main/images/BFS_res_v3.gif)
+
+![](https://github.com/IsaiasPachecoIPN/algorithmsManimBFSDFS/blob/main/images/BFS_res_v4.gif)
