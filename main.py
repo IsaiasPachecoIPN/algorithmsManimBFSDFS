@@ -87,7 +87,11 @@ class CreateScene(MovingCameraScene):
         self.camera.frame.shift(UP * DEFAULT_GRAPH_SCALE * (DEFAULT_GRAPH_SCALE+0.5)) 
 
         g = createGraph()
+        print("g:", g._labels)
+        [ g._labels[i].scale(0.5) for i in g._labels.keys() ]
         g2 = createGraph()
+        [ g2._labels[i].scale(0.5) for i in g2._labels.keys() ]
+        #print("g2:", g2)
 
         #Create title fro graph
         title_a = Text("BFS", color=BLUE)
@@ -110,7 +114,7 @@ class CreateScene(MovingCameraScene):
             )
         )
 
-        BFS(self, g, root)
+        #BFS(self, g, root)
         animateDFSAlgorithm(self, g2, root)
         self.wait(5)
 
